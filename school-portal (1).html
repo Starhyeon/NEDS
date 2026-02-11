@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Portal - NEDN</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #0693e3 100%);
+        }
+
+        .login-box {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            color: #1e88e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-box .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #1e88e5;
+        }
+
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: #1e88e5;
+            color: white;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #1565c0;
+        }
+
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            text-align: center;
+        }
+
+        /* Portal Dashboard */
+        .portal-header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .portal-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .portal-header .school-name {
+            opacity: 0.9;
+            font-size: 1.2rem;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 1px solid white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: white;
+            color: #1e3c72;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1e88e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        .section {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            color: #1e88e5;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container {
+            margin-top: 1rem;
+        }
+
+        .submissions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .submissions-table thead {
+            background: #f8f9fa;
+        }
+
+        .submissions-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .submissions-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .submissions-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-download {
+            background: #4fc3f7;
+            color: white;
+        }
+
+        .btn-download:hover {
+            background: #29b6f6;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <h2>School Portal</h2>
+            <p class="subtitle">Access your data and reports</p>
+            <div class="error-message" id="loginError">Invalid school code</div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>School Name</label>
+                    <select id="schoolSelect" required>
+                        <option value="">Select your school...</option>
+                        <!-- Schools will be loaded from Google Sheet -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Access Code</label>
+                    <input type="password" id="accessCode" placeholder="Enter your school's access code" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <p style="text-align: center; margin-top: 1.5rem; color: #666; font-size: 0.9rem;">
+                Don't have an access code? Contact <a href="mailto:jossat@bmchsd.org" style="color: #1e88e5;">jossat@bmchsd.org</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- School Dashboard -->
+    <div id="schoolDashboard" style="display: none;">
+        <div class="portal-header">
+            <button class="logout-btn" onclick="logout()">Logout</button>
+            <h1 id="portalTitle">School Dashboard</h1>
+            <p class="school-name" id="schoolName"></p>
+        </div>
+
+        <div class="container">
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSubmissions">0</div>
+                    <div class="stat-label">Total Submissions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="approvedSubmissions">0</div>
+                    <div class="stat-label">Approved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingSubmissions">0</div>
+                    <div class="stat-label">Pending Review</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="avgMicroplastics">0</div>
+                    <div class="stat-label">Avg. Microplastics</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="section">
+                <h2>Your Data Trends</h2>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Location Distribution</h2>
+                <div class="chart-container">
+                    <canvas id="locationChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Submissions Table -->
+            <div class="section">
+                <h2>Your Submissions</h2>
+                <div class="action-buttons">
+                    <button class="btn btn-download" onclick="downloadReport()">📊 Download Full Report (PDF)</button>
+                    <button class="btn btn-download" onclick="downloadCSV()">📄 Download Data (CSV)</button>
+                </div>
+                
+                <table class="submissions-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Weather</th>
+                            <th>Count</th>
+                            <th>Volunteer</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissionsTableBody">
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-state-icon">📋</div>
+                                    <p>No submissions yet. <a href="index.html#submit" style="color: #1e88e5;">Submit your first sample!</a></p>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Impact Summary -->
+            <div class="section">
+                <h2>Your Impact</h2>
+                <p style="color: #666; font-size: 1.1rem; line-height: 1.8;">
+                    <strong id="impactSchoolName">Your school</strong> has contributed valuable data to our national microplastics database. 
+                    Your <strong id="impactSamples">0 samples</strong> help researchers understand pollution patterns and 
+                    inform policy decisions. Keep up the great work!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSchool = null;
+
+        // Load available schools on page load
+        window.addEventListener('load', async () => {
+            await loadSchoolsList();
+        });
+
+        // Load schools from Google Sheet
+        async function loadSchoolsList() {
+            // This will fetch from your Schools sheet
+            // For now, adding placeholder
+            const schoolSelect = document.getElementById('schoolSelect');
+            
+            // Example schools (replace with actual Google Sheet data)
+            const schools = [
+                { name: 'Example High School', code: 'EHS2024' }
+            ];
+
+            schools.forEach(school => {
+                const option = document.createElement('option');
+                option.value = school.name;
+                option.textContent = school.name;
+                schoolSelect.appendChild(option);
+            });
+        }
+
+        // Login handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const schoolName = document.getElementById('schoolSelect').value;
+            const accessCode = document.getElementById('accessCode').value;
+
+            // Verify access code with Google Sheet
+            // For demo, accepting any code
+            if (schoolName && accessCode) {
+                currentSchool = schoolName;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('schoolDashboard').style.display = 'block';
+                document.getElementById('schoolName').textContent = schoolName;
+                document.getElementById('impactSchoolName').textContent = schoolName;
+                
+                await loadSchoolData(schoolName);
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+
+        // Logout handler
+        function logout() {
+            currentSchool = null;
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('schoolDashboard').style.display = 'none';
+            document.getElementById('loginForm').reset();
+        }
+
+        // Load school-specific data
+        async function loadSchoolData(schoolName) {
+            // Fetch all submissions from this school from Google Sheet
+            // Filter by school name
+            
+            // For now, showing placeholder data
+            updateStats({
+                total: 0,
+                approved: 0,
+                pending: 0,
+                avg: 0
+            });
+
+            createTrendChart([]);
+            createLocationChart([]);
+        }
+
+        // Update stats display
+        function updateStats(stats) {
+            document.getElementById('totalSubmissions').textContent = stats.total;
+            document.getElementById('approvedSubmissions').textContent = stats.approved;
+            document.getElementById('pendingSubmissions').textContent = stats.pending;
+            document.getElementById('avgMicroplastics').textContent = stats.avg.toFixed(1);
+            document.getElementById('impactSamples').textContent = stats.total;
+        }
+
+        // Create trend chart
+        function createTrendChart(data) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Microplastics Count',
+                        data: [],
+                        borderColor: '#1e88e5',
+                        backgroundColor: 'rgba(30, 136, 229, 0.1)',
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create location chart
+        function createLocationChart(data) {
+            const ctx = document.getElementById('locationChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Samples',
+                        data: [],
+                        backgroundColor: '#4fc3f7'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Download report as PDF
+        function downloadReport() {
+            alert('PDF report generation coming soon! This will include:\n\n• All your submissions\n• Charts and visualizations\n• Impact summary\n• NOAA protocol compliance certificate');
+        }
+
+        // Download data as CSV
+        function downloadCSV() {
+            // Generate CSV from school's data
+            alert('CSV download coming soon! This will export all your approved submissions.');
+        }
+
+        // Instructions for connecting
+        console.log(`
+TO CONNECT SCHOOL PORTAL TO GOOGLE SHEETS:
+
+1. Add "AccessCode" column to Schools sheet
+2. Generate unique codes for each school
+3. Update Apps Script to:
+   - Verify school + access code
+   - Return school-specific data
+   - Filter by school name
+
+Example Apps Script:
+function doGet(e) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet();
+  
+  if (e.parameter.action === 'getSchools') {
+    // Return list of school names
+  } else if (e.parameter.action === 'verifyAccess') {
+    // Check if school + code match
+  } else if (e.parameter.action === 'getSchoolData') {
+    // Return submissions for specific school
+  }
+}
+        `);
+    </script>
+</body>
+</html>
