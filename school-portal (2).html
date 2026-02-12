@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Portal — NEDN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep: #0a1628;
+            --ocean-dark: #0d2137;
+            --ocean-mid: #134568;
+            --ocean-light: #1a6b8a;
+            --teal: #2dd4bf;
+            --teal-muted: #1a9c8b;
+            --seafoam: #5eead4;
+            --sand: #f5f0e8;
+            --sand-light: #faf8f4;
+            --pearl: #ffffff;
+            --coral: #f97066;
+            --gold: #d4a853;
+            --slate: #64748b;
+            --slate-light: #94a3b8;
+            --green: #34d399;
+            --heading: 'Cormorant Garamond', Georgia, serif;
+            --body: 'DM Sans', system-ui, sans-serif;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { font-size: 16px; }
+        body {
+            font-family: var(--body);
+            background: var(--deep);
+            color: var(--pearl);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── LOGIN ── */
+        .login-screen {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-screen::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 60% 40%, rgba(45, 212, 191, 0.06) 0%, transparent 50%),
+                        radial-gradient(ellipse at 30% 70%, rgba(19, 69, 104, 0.15) 0%, transparent 50%);
+            animation: bgShift 20s ease-in-out infinite alternate;
+        }
+
+        @keyframes bgShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-5%, -3%); }
+        }
+
+        .login-card {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            padding: 3rem 2.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+            animation: cardIn 0.8s var(--ease-out-expo) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        @keyframes cardIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .login-card .logo {
+            font-family: var(--heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-card .logo span { color: var(--teal); }
+
+        .login-card .subtitle {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--slate-light);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 2.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--slate-light);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-family: var(--body);
+            font-size: 0.9rem;
+            color: var(--pearl);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(45, 212, 191, 0.1);
+        }
+
+        .form-group input::placeholder { color: var(--slate); }
+
+        .btn {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--teal);
+            color: var(--deep);
+            border: none;
+            border-radius: 100px;
+            font-family: var(--body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.35s var(--ease-out-expo);
+            margin-top: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--seafoam);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(45, 212, 191, 0.25);
+        }
+
+        .login-error {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--coral);
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--slate-light);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover { color: var(--teal); }
+
+        /* ── PORTAL ── */
+        .portal { display: none; }
+
+        .portal-header {
+            padding: 1.2rem 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .portal-header .logo {
+            font-family: var(--heading);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .portal-header .logo span { color: var(--teal); }
+
+        .portal-header-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .school-name-display {
+            font-size: 0.8rem;
+            color: var(--slate-light);
+        }
+
+        .btn-logout {
+            padding: 0.45rem 1.2rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 100px;
+            color: var(--slate-light);
+            font-family: var(--body);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-logout:hover {
+            border-color: var(--coral);
+            color: var(--coral);
+        }
+
+        .portal-content {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2.5rem 2rem;
+        }
+
+        .portal-title {
+            font-family: var(--heading);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .portal-subtitle {
+            font-size: 0.85rem;
+            color: var(--slate-light);
+            margin-bottom: 2rem;
+        }
+
+        /* Stats */
+        .portal-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .portal-stat {
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            text-align: center;
+        }
+
+        .portal-stat .number {
+            font-family: var(--heading);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--teal);
+        }
+
+        .portal-stat .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--slate-light);
+            margin-top: 0.3rem;
+        }
+
+        /* Data table */
+        .table-wrapper { overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        th {
+            text-align: left;
+            padding: 0.8rem 1rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--slate-light);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        td {
+            padding: 0.9rem 1rem;
+            font-size: 0.85rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        tr:hover td { background: rgba(255, 255, 255, 0.02); }
+
+        .status-badge {
+            display: inline-block;
+            padding: 0.25rem 0.7rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .status-badge.pending { background: rgba(212, 168, 83, 0.15); color: var(--gold); }
+        .status-badge.approved { background: rgba(52, 211, 153, 0.15); color: var(--green); }
+        .status-badge.rejected { background: rgba(248, 113, 113, 0.15); color: var(--coral); }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--slate);
+            font-size: 0.9rem;
+        }
+
+        /* Export button */
+        .btn-export {
+            padding: 0.6rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 100px;
+            color: var(--pearl);
+            font-family: var(--body);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-export:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--teal);
+        }
+
+        .section-divider {
+            font-family: var(--heading);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .portal-stats { grid-template-columns: 1fr; }
+            .portal-header { padding: 1rem; }
+            .portal-content { padding: 1.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ═══════════════ LOGIN ═══════════════ -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="logo">NEDN <span>School Portal</span></div>
+            <div class="subtitle">Partner School Dashboard</div>
+            <div class="form-group">
+                <label>School Name</label>
+                <input type="text" id="loginSchool" placeholder="Your school name">
+            </div>
+            <div class="form-group">
+                <label>Access Code</label>
+                <input type="text" id="loginCode" placeholder="Enter access code">
+            </div>
+            <button class="btn" onclick="schoolLogin()">Sign In</button>
+            <div class="login-error" id="loginError">Invalid school name or access code</div>
+            <a href="index.html" class="back-link">← Back to main site</a>
+        </div>
+    </div>
+
+    <!-- ═══════════════ PORTAL ═══════════════ -->
+    <div class="portal" id="portal">
+        <div class="portal-header">
+            <div class="logo">NEDN <span>School Portal</span></div>
+            <div class="portal-header-right">
+                <span class="school-name-display" id="schoolNameDisplay"></span>
+                <button class="btn-logout" onclick="schoolLogout()">Sign Out</button>
+            </div>
+        </div>
+
+        <div class="portal-content">
+            <h1 class="portal-title">Welcome Back</h1>
+            <p class="portal-subtitle" id="portalSubtitle">Here's an overview of your school's contributions to NEDN.</p>
+
+            <div class="portal-stats">
+                <div class="portal-stat">
+                    <div class="number" id="sTotalSamples">0</div>
+                    <div class="label">Total Samples</div>
+                </div>
+                <div class="portal-stat">
+                    <div class="number" id="sApproved">0</div>
+                    <div class="label">Approved</div>
+                </div>
+                <div class="portal-stat">
+                    <div class="number" id="sPending">0</div>
+                    <div class="label">Pending Review</div>
+                </div>
+            </div>
+
+            <button class="btn-export" onclick="exportCSV()">↓ Export Data as CSV</button>
+
+            <div class="section-divider">Your Submissions</div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Count</th>
+                            <th>Volunteer</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="schoolDataBody"></tbody>
+                </table>
+            </div>
+            <div class="empty-state" id="dataEmpty" style="display:none;">No submissions from your school yet. <a href="index.html#submit" style="color: var(--teal);">Submit your first sample →</a></div>
+        </div>
+    </div>
+
+    <script>
+        const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbyKDiuzOyP_CwhkJFaP4mq-hk8Cr9pEnz303g8Zg0rpkNgcZfEYFU5S3QLvPcw8-xtSiQ/exec';
+        let currentSchool = null;
+        let schoolData = [];
+
+        function schoolLogin() {
+            const schoolName = document.getElementById('loginSchool').value;
+            const accessCode = document.getElementById('loginCode').value;
+
+            if (!schoolName || !accessCode) return;
+
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'verifySchool', schoolName, accessCode })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    currentSchool = schoolName;
+                    document.getElementById('loginScreen').style.display = 'none';
+                    document.getElementById('portal').style.display = 'block';
+                    document.getElementById('schoolNameDisplay').textContent = schoolName;
+                    document.getElementById('portalSubtitle').textContent = `Here's an overview of ${schoolName}'s contributions to NEDN.`;
+                    loadSchoolData();
+                } else {
+                    document.getElementById('loginError').style.display = 'block';
+                }
+            })
+            .catch(() => {
+                // Fallback for no-cors
+                currentSchool = schoolName;
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('portal').style.display = 'block';
+                document.getElementById('schoolNameDisplay').textContent = schoolName;
+                document.getElementById('portalSubtitle').textContent = `Here's an overview of ${schoolName}'s contributions to NEDN.`;
+                loadSchoolData();
+            });
+        }
+
+        document.getElementById('loginCode').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') schoolLogin();
+        });
+
+        function schoolLogout() {
+            currentSchool = null;
+            schoolData = [];
+            document.getElementById('portal').style.display = 'none';
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('loginSchool').value = '';
+            document.getElementById('loginCode').value = '';
+        }
+
+        function loadSchoolData() {
+            fetch(GOOGLE_SHEETS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'getData', school: currentSchool })
+            })
+            .then(r => r.json())
+            .then(res => {
+                const body = document.getElementById('schoolDataBody');
+                const empty = document.getElementById('dataEmpty');
+                body.innerHTML = '';
+
+                if (res.status === 'success' && res.data.length > 0) {
+                    schoolData = res.data;
+                    empty.style.display = 'none';
+
+                    let approved = 0, pending = 0;
+                    res.data.forEach(item => {
+                        const status = (item.Status || 'pending').toLowerCase();
+                        if (status === 'approved') approved++;
+                        if (status === 'pending') pending++;
+
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${item.Date || ''}</td>
+                            <td>${item.Location || ''}</td>
+                            <td>${item['Microplastic Count'] || ''}</td>
+                            <td>${item['Volunteer Name'] || ''}</td>
+                            <td><span class="status-badge ${status}">${status}</span></td>
+                        `;
+                        body.appendChild(tr);
+                    });
+
+                    document.getElementById('sTotalSamples').textContent = res.data.length;
+                    document.getElementById('sApproved').textContent = approved;
+                    document.getElementById('sPending').textContent = pending;
+                } else {
+                    empty.style.display = 'block';
+                }
+            }).catch(() => {});
+        }
+
+        function exportCSV() {
+            if (schoolData.length === 0) return;
+
+            const headers = ['Date', 'Location', 'Latitude', 'Longitude', 'Weather', 'Microplastic Count', 'Volunteer Name', 'Status'];
+            const rows = schoolData.map(item => [
+                item.Date || '',
+                item.Location || '',
+                item.Latitude || '',
+                item.Longitude || '',
+                item.Weather || '',
+                item['Microplastic Count'] || '',
+                item['Volunteer Name'] || '',
+                item.Status || ''
+            ]);
+
+            let csv = headers.join(',') + '\n';
+            rows.forEach(r => { csv += r.map(c => `"${c}"`).join(',') + '\n'; });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${currentSchool}_NEDN_data.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
